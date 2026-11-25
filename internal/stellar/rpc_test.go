@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"encoding/hex"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -535,4 +536,29 @@ func TestContextCancellation(t *testing.T) {
 
 	_, err := f.FetchContract(ctx, testContractID)
 	require.Error(t, err)
+}
+
+// ExampleNewRPCFetcher shows the documented lifetime of an RPCFetcher: build
+// one for an RPC endpoint, read from that endpoint, then close it. The
+// httpClient argument is optional; passing nil uses the SDK's default client.
+//
+// The example talks to a local stand-in for Stellar RPC, so it runs offline and
+// its output stays stable in `go test`.
+func ExampleNewRPCFetcher() {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(`{"jsonrpc":"2.0","id":1,"result":{"passphrase":"Test SDF Network ; September 2015","protocolVersion":23}}`))
+	}))
+	defer srv.Close()
+
+	// srv.Client() keeps the example on the local server; pass nil to use the
+	// SDK's default HTTP client.
+	f := stellar.NewRPCFetcher(srv.URL, srv.Client())
+	defer f.Close()
+
+	passphrase, err := f.Network(context.Background())
+	fmt.Println(passphrase, err)
+
+	// Output:
+	// Test SDF Network ; September 2015 <nil>
 }
