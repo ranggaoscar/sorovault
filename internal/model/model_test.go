@@ -2,6 +2,7 @@ package model_test
 
 import (
 	"encoding/json"
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -380,4 +381,19 @@ func TestInterfaceFunctionEdgeCases(t *testing.T) {
 			}
 		})
 	}
+}
+
+// ExampleNewEnvMeta shows how the two version numbers the section carries become
+// the single version string consumers read. A release carries the protocol on its
+// own; a pre-release appends the pre-release number after a dot.
+func ExampleNewEnvMeta() {
+	release := model.NewEnvMeta(25, 0)
+	preRelease := model.NewEnvMeta(25, 1)
+
+	fmt.Println(release.InterfaceVersion)
+	fmt.Println(preRelease.InterfaceVersion)
+
+	// Output:
+	// 25
+	// 25.1
 }
