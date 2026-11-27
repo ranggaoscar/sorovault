@@ -629,7 +629,7 @@ func ExampleNewRPCFetcher() {
 	// srv.Client() keeps the example on the local server; pass nil to use the
 	// SDK's default HTTP client.
 	f := stellar.NewRPCFetcher(srv.URL, srv.Client())
-	defer f.Close()
+	defer func() { _ = f.Close() }()
 
 	passphrase, err := f.Network(context.Background())
 	fmt.Println(passphrase, err)
