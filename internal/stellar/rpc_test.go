@@ -121,9 +121,9 @@ func TestClose(t *testing.T) {
 		t.Parallel()
 
 		tests := []struct {
-			name    string
-			fetcher *stellar.RPCFetcher
-			wantErr bool
+			name	string
+			fetcher	*stellar.RPCFetcher
+			wantErr	bool
 		}{
 			{
 				name:    "happy path with active client",
